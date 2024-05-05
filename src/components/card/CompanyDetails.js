@@ -27,7 +27,7 @@ const CompanyDetails = () => {
             </div>
             <div>
                 <div style={{ color: 'rgba(0, 0, 0, 0.87)' }}>
-                    <h3 className='minimum-experience'>Minumum Experience</h3>
+                    <h3 className='minimum-experience'>Minimum Experience</h3>
                     <h2>2 years</h2>
                 </div>
                 <div className='btn-wrapper'>
