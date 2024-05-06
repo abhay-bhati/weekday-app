@@ -28,6 +28,10 @@
     font-size: 12px;
 }
 
+.select-input-width {
+    width: 50px !important;
+}
+
 .single-select {
     max-width: 100%;
     overflow: hidden;

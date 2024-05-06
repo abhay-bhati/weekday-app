@@ -1,7 +1,8 @@
 import Select from '../select';
 
 const Roles = () => {
-    const list = ["Engineering", "Medical", "Third", "Med", "Ring"];
+    const list = ["Backend", "Frontend", "Fullstack", "IOS", "Flutter", "React Native", "Android", "Frontend", "Tech Lead", "Dev-Ops", "Data Engineer"];
+
     return (
         <Select multiSelect list={list} placeholder="Roles"/>
     )

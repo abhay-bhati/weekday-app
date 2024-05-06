@@ -5,7 +5,7 @@ import AppProvider from './store/store';
 function App() {
   return (
     <AppProvider>
-      <div className='most-outer-wrapper'><Search /></div>
+      <div><Search /></div>
     </AppProvider>
   );
 }

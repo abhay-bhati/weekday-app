@@ -17,15 +17,12 @@ code {
     monospace;
 }
 
-.most-outer-wrapper {
-}
-
 .jobs-wrapper {
   display: flex;
   gap: 37px 55px;
   flex-flow: wrap;
-  /* width: calc(100% + 24px); */
   padding: 10px 90px;
+ 
 }
 
 .card-wrapper {
@@ -186,9 +183,23 @@ code {
 }
 
 .filter-wrapper {
-  padding:60px 60px;
+  padding:90px 90px;
   display:flex;
   align-items:flex-end;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-svg {
+  display: inline-block;
+  animation: spin 2s linear infinite;
 }

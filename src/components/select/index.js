@@ -1,14 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { ReactComponent as CaretDown } from '../../assets/icons/caret-down.svg';
+import React, { useState, useEffect, useRef } from 'react';
 import { ReactComponent as LineVertical } from '../../assets/icons/line-vertical.svg';
 
-const Select = ({ list, placeholder, selectClassName, multiSelect }) => {
+const Select = ({ list, placeholder, selectClassName, multiSelect, selectedValue }) => {
+    const dropdownRef = useRef(null);
     const [listData, setListData] = useState(list);
     const [showDropdown, setShowDropdown] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [tags, setTags] = useState([]);
     const [singleSelect, setSingleSelect] = useState('');
     let inputEl = document.getElementsByClassName(placeholder)[0];
+    let dropdownListArray = [];
+
+    useEffect(() => {
+
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setShowDropdown(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [showDropdown])
 
     const onSelect = (e, value) => {
         e.stopPropagation();
@@ -16,10 +30,12 @@ const Select = ({ list, placeholder, selectClassName, multiSelect }) => {
             setTags(prev => {
                 return [...prev, value];
             });
+            selectedValue && selectedValue([...tags, value])
             inputEl.focus();
         }
         else {
             setSingleSelect(value);
+            selectedValue && selectedValue(value);
         }
         setShowDropdown(false);
     };
@@ -29,8 +45,9 @@ const Select = ({ list, placeholder, selectClassName, multiSelect }) => {
         setTags((prev) => {
             const newTags = [...prev];
             newTags.splice(index, 1);
+            selectedValue && selectedValue(newTags);
             return newTags
-        })
+        });
         inputEl.focus();
     };
 
@@ -39,12 +56,11 @@ const Select = ({ list, placeholder, selectClassName, multiSelect }) => {
         const filteredArray = list?.filter(item => item?.toLowerCase().includes(e.target.value?.toLowerCase()));
         setListData(filteredArray);
     }
-    console.log('singleSelect', singleSelect);
-    console.log('mult', multiSelect)
+
     return (
-        <div>
+        <div id='select-element' ref={dropdownRef}>
             {multiSelect ? (tags?.length > 0 && <div className='select-top-label'>{placeholder}</div>) : (singleSelect && <div className='select-top-label'>{placeholder}</div>)}
-            <div className={`select-wrapper ${selectClassName ? selectClassName : ''}`} style={{ position: 'relative' }} onClick={() => setShowDropdown(true)}>
+            <div className={`select-wrapper ${selectClassName ? selectClassName : ''}`} style={{ position: 'relative', width:'auto' }} onClick={() => setShowDropdown(!showDropdown)}>
                 {multiSelect ? <div style={{ display: 'flex', alignItems: 'center', gap: '3px', paddingRight: '4px' }}>
                     {tags?.map((item, index) => {
                         return (
@@ -61,7 +77,7 @@ const Select = ({ list, placeholder, selectClassName, multiSelect }) => {
                     :
                     <div className='single-select'>{singleSelect}</div>
                 }
-                <input className={`select-input ${placeholder}`} placeholder={multiSelect ? (tags.length > 0 ? '' : placeholder) : (singleSelect.length > 0 ? '' : placeholder)} onChange={(e) => onSearchInput(e)} />
+                <input className={`select-input ${placeholder} ${(singleSelect || tags?.length > 0) ? 'select-input-width' : ''}`} placeholder={multiSelect ? (tags.length > 0 ? '' : placeholder) : (singleSelect.length > 0 ? '' : placeholder)} onChange={(e) => onSearchInput(e)} />
                 <div>
                     <LineVertical />
                     <svg className="select-caret-down" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
@@ -69,10 +85,14 @@ const Select = ({ list, placeholder, selectClassName, multiSelect }) => {
                 <div className='select-dropdown' style={{ display: showDropdown ? 'block' : 'none' }} >
                     {listData?.length > 0 ? <div className='select-dropdown-inside'>
                         {listData?.map(item => {
-                            return (
-                                <div className={`select-dropdown-options ${singleSelect === item ? 'select-dropdown-options-single' : ''}`} onClick={(e) => onSelect(e, item)}>{item}</div>
-                            )
+                            if (!tags.includes(item)) {
+                                dropdownListArray.push(item);
+                                return (
+                                    <div className={`select-dropdown-options ${singleSelect === item ? 'select-dropdown-options-single' : ''}`} onClick={(e) => onSelect(e, item)}>{item}</div>
+                                )
+                            }
                         })}
+                        {dropdownListArray?.length == 0 && <div className='select-empty-options'>No Options</div>}
                     </div>
                         :
                         <div className='select-empty-options'>No Options</div>
